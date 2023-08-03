@@ -1,65 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
+    <style>
+        
+.btn-logout {
+  padding: 0.5rem 1rem;
+  background-color: #f56565;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+}
 
+.btn-logout:hover {
+  background-color: #e53e3e;
+}
+
+/* Custom styles */
+.dark {
+  background-color: #1a202c;
+  color: #fff;
+}
+
+.container {
+  font-family: 'Arial', sans-serif;
+}
+
+.table-auto {
+  border-collapse: collapse;
+}
+
+.table-auto th,
+.table-auto td {
+  border: 1px solid #e2e8f0;
+}
+
+.table-auto th {
+  background-color: #edf2f7;
+}
+
+.table-dark th {
+  background-color: #2d3748;
+  color: #fff;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: bold;
+  margin-bottom: 0.5rem; /* Add margin for spacing between buttons */
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+.btn-edit {
+  background-color: #4299e1;
+  color: white;
+}
+
+.btn-delete {
+  background-color: #f56565;
+  color: white;
+}
+
+.btn-update {
+  background-color: #48bb78;
+  color: white;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.theme-toggle input[type="checkbox"] {
+  appearance: none;
+  width: 2rem;
+  height: 1rem;
+  background-color: #e2e8f0;
+  border-radius: 0.5rem;
+  position: relative;
+}
+
+.theme-toggle input[type="checkbox"]:checked {
+  background-color: #4299e1;
+}
+
+.theme-toggle input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  background-color: #fff;
+  border-radius: 50%;
+  transform: translateX(0.15rem);
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle input[type="checkbox"]:checked::before {
+  transform: translateX(1rem);
+}
+
+.pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+    </style>
 <head>
     <meta charset="UTF-8">
-    <me ta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        .box {
-            background-color: black;
-            height: 100px;
-            color: white;
-        }
-
-        @media (min-width:600px) and (max-width:799px) {
-            .box1 {
-                color: red;
-                font-size: 60px;
-                background-color: aqua;
-                padding-left: 100px;
-            }
-  }
-
-        @media (min-width:800px) and (max-width:999px) {
-            .box2 {
-                color: red;
-                font-size: 60px;
-                background-color: yellowgreen;
-                        }
-   }
-
-        @media (min-width:1000px) and (max-width:1199px) {
-            .box3 {
-                color: red;
-                font-size: 60px;
-            }
-
-        }
-
-        @media (min-width:1200px) and (max-width: 1399px) {
-            .box4 {
-                color: red;
-                font-size: 60px;
-            }
-
-        }
-    </style>
 </head>
-
 <body>
-    <div class="box box1"> i'm a small phone</div>
-    <div class="box box2"> i'm a smart phone</div>
-    <div class="box box3"> i'm a tablet</div>
-    <div class="box box4"> i'm a desktop</div>
+    <div class="bg-gray-900 text-white">
+        <div class="container mx-auto p-6 flex items-center justify-between">
+          <h2 class="text-2xl font-semibold">Data Table</h2>
+          <label class="theme-toggle">
+            <span>Dark Theme</span>
+            <input type="checkbox" id="darkModeToggle" class="form-checkbox">
+            <div class="w-6 h-6 bg-white rounded-full"></div>
+          </label>
+        </div>
+      </div>
+    
+    
+      
+    <div class="container mx-auto p-6">
+       
+        <table id="dataTable" class="table-auto w-full shadow-md rounded-lg">
+          <thead>
+            <tr>
+              <th class="px-4 py-2" data-field="id">ID</th>
+    <th class="px-4 py-2" data-field="name">Name</th>
+    <th class="px-4 py-2" data-field="status">Status</th>
+    <th class="px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Table rows will be added dynamically here -->
+          </tbody>
+        </table>
+      </div>
+    
+    </body>
+    
+    <script>
+        const data = [
+  { id: 1, name: 'Item 1', status: 'Pending' },
+  { id: 2, name: 'Item 2', status: 'Approved' },
+  { id: 3, name: 'Item 3', status: 'Rejected' },
+  // Add more data as needed
+];
 
-    <ol>
-        <li style="text-decoration: none;">kjkjk</li>
-        <li style="text-decoration: none;">kjkjk</li>
-        <li style="text-decoration: none;">kjkjk</li>
-    </ol>
-    <button> <a href="parallax.html">prallax</a> </button>
+let sortField = 'id'; // Default sort field
+let sortDirection = 'asc'; // Default sort direction
+
+const tableBody = document.getElementById('tableBody');
+const tableHeader = document.querySelector('#dataTable thead');
+const darkModeToggle = document.getElementById('darkModeToggle');
+const darkModeClass = 'dark';
+
+// Helper function to render the table
+function renderTable() {
+  tableBody.innerHTML = '';
+  data
+    .sort((a, b) => {
+      const aValue = a[sortField];
+      const bValue = b[sortField];
+      if (typeof aValue === 'string') {
+        return sortDirection === 'asc'
+          ? aValue.localeCompare(bValue)
+          : bValue.localeCompare(aValue);
+      } else if (typeof aValue === 'number') {
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
+      } else {
+        return 0;
+      }
+    })
+    .forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td class="border px-4 py-2">${item.id}</td>
+        <td class="border px-4 py-2">${item.name}</td>
+        <td class="border px-4 py-2">
+          <span class="pill ${item.status === 'Pending' ? 'bg-yellow-200 text-yellow-800' : item.status === 'Approved' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}">${item.status}</span>
+        </td>
+        <td class="border px-4 py-2">
+          <button class="btn btn-edit">Edit</button>
+          <button class="btn btn-delete">Delete</button>
+          <button class="btn btn-update">Update</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+  
+}
+
+// Dark mode toggle
+darkModeToggle.addEventListener('change', () => {
+  document.body.classList.toggle(darkModeClass);
+  tableHeader.classList.toggle('table-dark');
+  renderTable(); // Rerender table to update pill colors
+});
+
+// Table header click event for sorting
+tableHeader.addEventListener('click', e => {
+  if (e.target.tagName === 'TH') {
+    const clickedField = e.target.dataset.field;
+    if (clickedField) {
+      if (clickedField === sortField) {
+        sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortField = clickedField;
+        sortDirection = 'asc';
+      }
+      renderTable();
+    }
+  }
+});
+
+// Initial rendering
+renderTable();
+
+    </script>
 </body>
-
 </html>
+
